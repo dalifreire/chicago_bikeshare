@@ -29,8 +29,8 @@ input("Aperte Enter para continuar...")
 # TAREFA 1
 # TODO: Imprima as primeiras 20 linhas usando um loop para identificar os dados.
 print("\n\nTAREFA 1: Imprimindo as primeiras 20 amostras")
-for i in range(1, 21):
-    print("Amostra {}: {}".format(i, data_list[i]))
+for indice in range(1, 21):
+    print("Amostra {}: {}".format(indice, data_list[indice]))
 
 # Vamos mudar o data_list para remover o cabeçalho dele.
 data_list = data_list[1:]
@@ -42,8 +42,8 @@ input("Aperte Enter para continuar...")
 # TAREFA 2
 # TODO: Imprima o `gênero` das primeiras 20 linhas
 print("\nTAREFA 2: Imprimindo o gênero das primeiras 20 amostras")
-for i in range(20):
-    print("Amostra {}: '{}'".format((i+1), data_list[i][-2]))
+for indice in range(20):
+    print("Amostra {}: '{}'".format((indice+1), data_list[indice][-2]))
 
 
 # Ótimo! Nós podemos pegar as linhas(samples) iterando com um for, e as colunas(features) por índices.
@@ -82,10 +82,24 @@ input("Aperte Enter para continuar...")
 # Agora sabemos como acessar as features, vamos contar quantos Male (Masculinos) e Female (Femininos) o dataset tem
 # TAREFA 4
 # TODO: Conte cada gênero. Você não deveria usar uma função para isso.
-generos = column_to_list(data_list, -2)
-male = generos.count('Male')
-female = generos.count('Female')
+def count(list, value_to_count):
+    """
+    Retorna a quantidade de itens existentes na lista informada como parametro.
+    Argumentos:
+      list: Lista de itens.
+      value_to_count: Valor a ser contado ao percorrer a lista de itens.
+    Retorna:
+      Quantidade de itens encontrados na lista.
+    """
+    count = 0;
+    for item in list:
+        if item == value_to_count:
+            count = count + 1
+    return count
 
+generos = column_to_list(data_list, -2)
+male = count(generos, 'Male');
+female = count(generos, 'Female');
 
 
 # Verificando o resultado
@@ -109,8 +123,9 @@ def count_gender(data_list):
     Retorna:
       Quantidade de itens 'Male' e "Female'.
     """
-    male = column_to_list(data_list, -2).count('Male')
-    female = column_to_list(data_list, -2).count('Female')
+    generos = column_to_list(data_list, -2)
+    male = count(generos, 'Male')
+    female = count(generos, 'Female')
     return [male, female]
 
 def count_user_type(data_list):
@@ -121,8 +136,9 @@ def count_user_type(data_list):
     Retorna:
       Quantidade de itens 'Customer' e 'Subscriber'.
     """
-    customer = column_to_list(data_list, -3).count('Customer')
-    subscriber = column_to_list(data_list, -3).count('Subscriber')
+    types = column_to_list(data_list, -3)
+    customer = count(types, 'Customer');
+    subscriber = count(types, 'Subscriber');
     return [customer, subscriber]
 
 
@@ -148,7 +164,11 @@ def most_popular_gender(data_list):
     Retorna:
       Retorna o genero que mais ocorre na lista recebida como parametro ('Male' ou 'Female').
     """
-    answer = "Male" if (count_gender(data_list)[0] > count_gender(data_list)[1]) else "Female"
+    answer = "Equal"
+    if count_gender(data_list)[0] > count_gender(data_list)[1]:
+        answer = "Male"
+    elif count_gender(data_list)[0] < count_gender(data_list)[1]:
+        answer = "Female"
     return answer
 
 
@@ -206,27 +226,40 @@ input("Aperte Enter para continuar...")
 # TAREFA 9
 # TODO: Ache a duração de viagem Mínima, Máxima, Média, e Mediana.
 # Você não deve usar funções prontas para isso, como max() e min().
-def median(lst):
+def median(list):
     """
     Calula a mediana dos itens da lista passada como parametro.
     Argumentos:
-      lst: Lista de valores para os quais se deseja calcular a mediana.
+      list: Lista de valores para os quais se deseja calcular a mediana.
     Retorna:
       Valor da mediana dos itens da lista.
     """
-    n = len(lst)
-    if n < 1:
+    len_list = len(list)
+    if len_list < 1:
         return None
-    if n % 2 == 1:
-        return sorted(lst)[n//2]
+    if len_list % 2 == 1:
+        return sorted(list)[len_list//2]
     else:
-        return sum(sorted(lst)[n//2-1:n//2+1])/2.0
+        return sum(sorted(list)[len_list//2-1:len_list//2+1])/2.0
+
+def avg(list):
+    """
+    Calula a média dos itens da lista passada como parametro.
+    Argumentos:
+      list: Lista de valores para os quais se deseja calcular a média.
+    Retorna:
+      Valor da média dos itens da lista.
+    """
+    sum = 0
+    for value in list:
+        sum = sum + value
+    return sum/len(list)
 
 trip_duration_list = [int(i) for i in column_to_list(data_list, 2)]
 trip_duration_list.sort()
 min_trip = trip_duration_list[0]
-max_trip = trip_duration_list[len(trip_duration_list)-1]
-mean_trip = sum(trip_duration_list)/len(trip_duration_list)
+max_trip = trip_duration_list[-1]
+mean_trip = avg(trip_duration_list)
 median_trip = median(trip_duration_list)
 
 
@@ -285,7 +318,7 @@ def count_items(column_list):
     item_types = list(set(column_list))
     count_items = []
     for t in item_types:
-        count_items.append(column_list.count(t))
+        count_items.append(count(column_list, t))
     return item_types, count_items
 
 
